@@ -105,7 +105,6 @@ def order(username,address,wallet):
     print("Non Veg Category")
     print("3:Meal Rs.30"+'\n'+"4:Biriyani Rs.40"+'\n'+"5:Parotta Rs.50")
     print()
-    
     d={1:"Idly",2:"Dosa",3:"Meal",4:"Biriyani",5:"Parotta"}
     print("No of food would like to buy :")
     c_i=int(input())
@@ -233,6 +232,70 @@ def display_orders():
     else:
         print("No Records found!")
 
+def ord_failed():
+    mycursor.execute("select username,totalcost from orderdetails where delivery_status like 'Not Delivered'")
+    d=mycursor.fetchall()
+    if d:
+        print()
+        print("Give refund for failed orders")
+        print()
+        for row in range(len(d)):
+            username=d[row][0]
+            totalcost=float(d[row][1])
+            
+            mycursor.execute("select wallet from userdetails where username like %s",(username,))
+            d1=mycursor.fetchone()
+            wallet=totalcost+float(d1[0])
+            mycursor.execute("update userdetails SET wallet=%s WHERE username like %s",(str(wallet),username,))
+            mydb.commit() 
+            print("The Refund Rs.{} given to {} and Now he have Rs.{} in wallet".format(totalcost,username,wallet))
+        mycursor.execute("DELETE FROM orderdetails WHERE delivery_status like 'Not Delivered'")
+        mydb.commit()
+    else:
+        print()
+        print("There is Nothing Failed orders")
+        print()
+
+
+def give_offer():
+    mycursor.execute("select fooditems,offers from stock where  quantity > 70 ")
+    d=mycursor.fetchall()
+    if d:
+        
+        off_rate=int(input("how much give you offer :  "))
+        for i in range(len(d)):
+            fooditems=d[i][0]    
+            mycursor.execute("update stock SET offers =%s WHERE fooditems like %s",(off_rate,fooditems,))
+            mydb.commit() 
+    print("offers updated success")
+
+def feedb(find_id,username):
+    print("Give your feedback here")
+    s=input()
+    if s:
+        mycursor.execute("insert into feedbackdetails(fb_id,username,feedback) values(%s,%s,%s)",(find_id,username,s,))
+        mydb.commit()
+        print("Thsnk You ")
+        return 1
+    else:
+        print("plz give your feedback")
+        feedb(find_id,username)
+
+def show_fb():
+    mycursor.execute("select username,feedback from feedbackdetails")
+    d=mycursor.fetchall()
+    if d:
+        print("Feedbacks are:-")
+        print()
+        for i in range(len(d)):
+            print("User is : %s"%d[i][0])
+            print("Feedback is : %s"%d[i][1])
+            print()
+    else:
+        print("No Feedback here")
+
+
+
 
 print("welcome to Foodparadise !!") 
 destination=input("Are you a user or admin or newuser?"+'\n'+" Type your destination :") 
@@ -289,21 +352,25 @@ if destination=="user":
                         mycursor.execute("update stock SET ratedfood=%s WHERE fooditems like %s",(str(rf),food,))
                         mydb.commit() 
 
-                    mycursor.execute("update userdetails SET activecount=%s WHERE username like %s",(str(act),username,))
-                    mydb.commit()
+                    
                     mycursor.execute("insert into orderdetails(ord_id,username,foodordered,totalcost,delivery_status) values (NULL,%s,%s,%s,%s)",(username,st,totalcost,'Not Delivered',))
                     mydb.commit()
                     print("Order Success")
                     print('Wait for few seconds for setting up delivery')
 
                     time.sleep(5)
+                    mycursor.execute("update userdetails SET activecount=%s WHERE username like %s",(str(act),username,))
+                    mydb.commit()
                     print("delivery starts, it will delivered within 30 mins")
+                    
                     mycursor.execute("select * from orderdetails where username like %s",(username,))
                     d=mycursor.fetchall()
                     find_id=d[len(d)-1][0]
                     
                     mycursor.execute("update orderdetails SET delivery_status='deivered' WHERE ord_id like  %s",(find_id,))
                     mydb.commit()
+                    fb=feedb(find_id,username)
+                    
 
         elif option==2:
             display(username)
@@ -318,7 +385,7 @@ if destination=="user":
 
 
 if destination=="admin":
-    print("1.Display the particular user details"+'\n'+"2.Display all the records"+'\n'+"3.Display food table"+'\n'+"4.Display order details")
+    print("1.Display the particular user details"+'\n'+"2.Display all the records"+'\n'+"3.Display food table"+'\n'+"4.Display order details"+'\n'+"5.Check Failed orders for refund"+'\n'+"6.Give offers for nonrated items"+'\n'+"7.Show Users Feedback")
     print("Enter your option :")
     option=int(input())
     if option==1:
@@ -330,5 +397,14 @@ if destination=="admin":
         display_food() 
     elif option==4:
         display_orders()
+    elif option==5:
+        print("check refund for failed orders")
+        ord_failed()
+    elif option==6:
+        print("The offers allocated for nonrated items")
+        give_offer()
+    elif option==7:
+        show_fb()
+        print()
     else:
         print("Invalid option Please choose correct option!")
