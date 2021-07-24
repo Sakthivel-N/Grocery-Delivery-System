@@ -98,10 +98,13 @@ def payment_order(username,totalcost,wallet):
 
 
 def order(username,address,wallet):
+    print()
     print("Veg Category")
     print("1:Idly Rs.10"+'\n'+"2:Dosa Rs.20")
+    print()
     print("Non Veg Category")
     print("3:Meal Rs.30"+'\n'+"4:Biriyani Rs.40"+'\n'+"5:Parotta Rs.50")
+    print()
     
     d={1:"Idly",2:"Dosa",3:"Meal",4:"Biriyani",5:"Parotta"}
     print("No of food would like to buy :")
