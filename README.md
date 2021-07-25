@@ -16,7 +16,9 @@ I also give mysql file, you can create the entire database from this file, you c
 Login has User , Admin, Newuser
 
 1.USER
-  Orders
+
+  Orders,
+  
   Check out prev orders,
   
   Add wallet amount,
@@ -24,6 +26,7 @@ Login has User , Admin, Newuser
   Check wallet balance,
 
 2.ADMIN
+
   Show user details,
   
   Orders status,
