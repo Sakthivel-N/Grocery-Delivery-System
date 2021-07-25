@@ -17,12 +17,17 @@ Login has User , Admin, Newuser
 
 1.USER
   Orders
-  Check out prev orders
-  Add wallet amount
-  Check wallet balance
+  Check out prev orders,
+  
+  Add wallet amount,
+  
+  Check wallet balance,
 
 2.ADMIN
-  Show user details
-  Orders status
-  Refund status
+  Show user details,
+  
+  Orders status,
+  
+  Refund status,
+  
   Users feedback
